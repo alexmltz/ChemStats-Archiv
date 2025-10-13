@@ -14,10 +14,6 @@ stopp_date <- "2025-06-30"
 ########################################################################################################################
 # Vorbereitung Zinsstrukturkurve
 ########################################################################################################################
-# Zur Vervollständigung unserer Simulation benötigen wir die Zinsstruktur deutscher Staatsanleihen, um den Basiszins des
-# Bundesfinansministeriums über die volle Länge der Simulation bereitstellen zu können. Hierfür erstellen wir uns zunächst
-# einen Datensatz, der alle Zinsdaten der Bundesbank für deutsche Staatsanleihen in monatlicher und täglicher Auflösung
-# vereint:
 #---> 1. Hilfsfunktion zur Identifikation des letzten Handelstages:
 find_last_workday <- function(date, holidays) {
   while (date %in% holidays | weekdays(date) %in% c("Samstag", "Sonntag")) {
@@ -100,16 +96,6 @@ yield_curve <- monthly_data  %>%
 ########################################################################################################################
 # Interpolation Zinsstrukturkurve
 ########################################################################################################################
-# Ausgehend von den Zinstrukturdaten ist ein letzter, allerdings komplexer Schritt nötig, denn die Zinsstrukturkurve ist
-# bidirektional unvollständig, d.h. wir habe keine tagesaktuellen Daten über den vollen Zeitraum und es liegt, gerade bei
-# den frühe Zinstrukturkurven ein begrenztes Spektrum vor. Somit stehen wir vor der Herausforderung, dass wir einerseits
-# interpolieren müssen, um die Lücken der Tagesaktualität zu 'füllen', anderersetis extrapolieren müssen, um das Spektrum
-# kurzer Zinsstruturkurven zu 'erweitern'. Ausgehen von der Annahme, dass Zinsstrukturkurven einer relativ stabilen Logik
-# folgen und die Zinswerte eines beliebigen Punktes auf der Zinsstrukturkurve bidirektional von anderen Punkten abhängt
-# bzw. diese bedingt, greifen wir auf eine Akima-Spline-Interpolation zurück. Allerdings wäre das extrem rechenintensiv,
-# weshalb wir die Aufgabe in zwei Schritte aufspalten und zunächst die Svensson-Methodik nutzen, um die Zinsstrukturkurven
-# zu vervollständigen, bevor die Extrapolation unseren Datensatz verollständigt (Notiz: Der folgende Code nutzt eine lin-
-# eare Akima-Interpolation, da die Spline-Variante selbst sehr leistungsstarke Rechner schnell überfordert!).
 #---> 1. Hilfsfunktion zur Berechnung von Svensson-Parameter: 
 svensson_function <- function(t, beta0, beta1, beta2, beta3, tau1, tau2){
   term1 <- (1 - exp(-t/tau1)) / (t/tau1)
