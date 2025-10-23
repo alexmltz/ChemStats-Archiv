@@ -1,2 +1,3 @@
 - 50/50 2x world / world and rebalance
 - 2x world in different interest rate scenarios
+- Buy after 20/30/40% Drawdown
